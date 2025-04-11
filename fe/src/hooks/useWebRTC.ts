@@ -14,6 +14,11 @@ const useWebRTC = () => {
   const peerRef = useRef<RTCPeerConnection | null>(null);
 
   useEffect(() => {
+    const streamTracksToPeer = (pc: RTCPeerConnection) => {
+      localStream?.getTracks().forEach((track) => {
+        pc.addTrack(track, localStream);
+      });
+    };
     const start = async () => {
       try {
         console.log("Requesting media permissions...");
@@ -33,6 +38,8 @@ const useWebRTC = () => {
     start();
 
     socket.on("offer", async ({ sdp }) => {
+      console.log("offer");
+
       const pc = createPeerConnection(handleRemoteStream, handleIceCandidate);
       peerRef.current = pc;
 
@@ -46,6 +53,7 @@ const useWebRTC = () => {
     });
 
     socket.on("answer", async ({ sdp }) => {
+      console.log("answer");
       if (!peerRef.current) return;
       await peerRef.current.setRemoteDescription(
         new RTCSessionDescription(sdp)
@@ -53,11 +61,13 @@ const useWebRTC = () => {
     });
 
     socket.on("ice-candidate", async ({ candidate }) => {
+      console.log("ice-candidate");
       if (!peerRef.current) return;
       await peerRef.current.addIceCandidate(new RTCIceCandidate(candidate));
     });
 
     socket.on("ready", async () => {
+      console.log("ready");
       const pc = createPeerConnection(handleRemoteStream, handleIceCandidate);
       peerRef.current = pc;
 
@@ -69,16 +79,10 @@ const useWebRTC = () => {
       socket.emit("offer", { sdp: offer });
     });
 
-    return () => {
-      socket.disconnect();
-    };
-  }, []);
-
-  const streamTracksToPeer = (pc: RTCPeerConnection) => {
-    localStream?.getTracks().forEach((track) => {
-      pc.addTrack(track, localStream);
-    });
-  };
+    // return () => {
+    //   socket.disconnect();
+    // };
+  }, [localStream]);
 
   const handleRemoteStream = (stream: MediaStream) => {
     setRemoteStream(stream);
