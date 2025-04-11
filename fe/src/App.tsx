@@ -1,5 +1,5 @@
 // App.tsx
-import React, { useRef, useEffect } from "react";
+import { useRef, useEffect } from "react";
 import useWebRTC from "./hooks/useWebRTC";
 
 const App = () => {
