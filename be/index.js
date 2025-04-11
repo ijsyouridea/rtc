@@ -10,6 +10,7 @@ io.on("connection", (socket) => {
 
   socket.on("join", () => {
     users.push(socket.id);
+    console.log(users);
     if (users.length > 1) {
       socket.emit("ready");
     }
