@@ -66,7 +66,7 @@ const useWebRTC = () => {
       const offer = await pc.createOffer();
       await pc.setLocalDescription(offer);
 
-      socket.emit("offer", "room-123");
+      socket.emit("offer", { sdp: offer });
     });
 
     return () => {
