@@ -8,7 +8,14 @@ const createPeerConnection = (
   });
 
   peerConnection.onicecandidate = (event) => {
-    if (event.candidate) onIceCandidate(event.candidate);
+    if (event.candidate) {
+      onIceCandidate(event.candidate);
+      try {
+        peerConnection.addIceCandidate(new RTCIceCandidate(event.candidate));
+      } catch (e) {
+        console.error("Failed to add ICE candidate", e);
+      }
+    }
   };
 
   peerConnection.ontrack = (event) => {
