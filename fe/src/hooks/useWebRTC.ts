@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import io from "socket.io-client";
 import createPeerConnection from "../utils/createPeerConnection";
 
-const socket = io("http://localhost:5001", {
+const socket = io("https://rtc-m8p0.onrender.com", {
   transports: ["websocket"], // optional but helps
   reconnection: true,
 });
