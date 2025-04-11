@@ -13,9 +13,13 @@ const useWebRTC = () => {
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
   const peerRef = useRef<RTCPeerConnection | null>(null);
 
-  const streamTracksToPeer = (pc: RTCPeerConnection) => {
-    localStream?.getTracks().forEach((track) => {
-      pc.addTrack(track, localStream);
+  const streamTracksToPeer = async (
+    pc: RTCPeerConnection,
+    localStream: Promise<MediaStream | undefined>
+  ) => {
+    const stream = await localStream;
+    stream?.getTracks().forEach((track) => {
+      pc.addTrack(track, stream);
     });
   };
   useEffect(() => {
@@ -30,12 +34,13 @@ const useWebRTC = () => {
         setLocalStream(stream);
         console.log("Emitting join event");
         socket.emit("join");
+        return stream;
       } catch (error) {
         console.error("Error accessing media devices:", error);
       }
     };
 
-    start();
+    const stream = start();
 
     socket.on("offer", async ({ sdp }) => {
       console.log("offer");
@@ -43,7 +48,7 @@ const useWebRTC = () => {
       const pc = createPeerConnection(handleRemoteStream, handleIceCandidate);
       peerRef.current = pc;
 
-      streamTracksToPeer(pc);
+      streamTracksToPeer(pc, stream);
 
       await pc.setRemoteDescription(new RTCSessionDescription(sdp));
       const answer = await pc.createAnswer();
@@ -71,7 +76,7 @@ const useWebRTC = () => {
       const pc = createPeerConnection(handleRemoteStream, handleIceCandidate);
       peerRef.current = pc;
 
-      streamTracksToPeer(pc);
+      streamTracksToPeer(pc, stream);
 
       const offer = await pc.createOffer();
       await pc.setLocalDescription(offer);

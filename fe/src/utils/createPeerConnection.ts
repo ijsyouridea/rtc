@@ -18,6 +18,9 @@ const createPeerConnection = (
   peerConnection.addEventListener("icegatheringstatechange", () => {
     console.log("❄️ ICE gathering state:", peerConnection.iceGatheringState);
   });
+  peerConnection.addEventListener("signalingstatechange", () => {
+    console.log("🔄 Signaling state:", peerConnection.signalingState);
+  });
 
   return peerConnection;
 };
