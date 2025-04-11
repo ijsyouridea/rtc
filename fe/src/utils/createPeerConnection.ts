@@ -15,6 +15,9 @@ const createPeerConnection = (
     const stream = event.streams[0] || new MediaStream([event.track]);
     onTrack(stream);
   };
+  peerConnection.addEventListener("icegatheringstatechange", () => {
+    console.log("❄️ ICE gathering state:", peerConnection.iceGatheringState);
+  });
 
   return peerConnection;
 };
