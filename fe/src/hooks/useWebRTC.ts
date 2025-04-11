@@ -82,7 +82,8 @@ const useWebRTC = () => {
     // return () => {
     //   socket.disconnect();
     // };
-  }, [localStream]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleRemoteStream = (stream: MediaStream) => {
     setRemoteStream(stream);
