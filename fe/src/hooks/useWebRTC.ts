@@ -13,12 +13,12 @@ const useWebRTC = () => {
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
   const peerRef = useRef<RTCPeerConnection | null>(null);
 
+  const streamTracksToPeer = (pc: RTCPeerConnection) => {
+    localStream?.getTracks().forEach((track) => {
+      pc.addTrack(track, localStream);
+    });
+  };
   useEffect(() => {
-    const streamTracksToPeer = (pc: RTCPeerConnection) => {
-      localStream?.getTracks().forEach((track) => {
-        pc.addTrack(track, localStream);
-      });
-    };
     const start = async () => {
       try {
         console.log("Requesting media permissions...");
@@ -90,6 +90,7 @@ const useWebRTC = () => {
   };
 
   const handleIceCandidate = (candidate: RTCIceCandidate) => {
+    console.log({ candidate });
     socket.emit("ice-candidate", { candidate });
   };
 
